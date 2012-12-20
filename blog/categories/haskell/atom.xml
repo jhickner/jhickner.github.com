@@ -4,7 +4,7 @@
   <title><![CDATA[Category: haskell | forever getline]]></title>
   <link href="http://jhickner.github.com/blog/categories/haskell/atom.xml" rel="self"/>
   <link href="http://jhickner.github.com/"/>
-  <updated>2012-12-20T10:13:03-08:00</updated>
+  <updated>2012-12-20T10:17:52-08:00</updated>
   <id>http://jhickner.github.com/</id>
   <author>
     <name><![CDATA[Jason Hickner]]></name>
@@ -19,12 +19,12 @@
     <updated>2012-12-19T20:21:00-08:00</updated>
     <id>http://jhickner.github.com/blog/2012/12/19/easy-haskell-deployment</id>
     <content type="html"><![CDATA[<p>At work I run a bunch of small apps that do little analytics and monitoring
-tasks, all spread across servers at Rackspace and Amazon. I like using haskell
-for these types of apps since the resident memory usage is often only 2-4mb,
-which makes great use of low-ram servers.</p>
+tasks, all spread across servers at Rackspace and Amazon. Haskell is great for
+these types of apps since the resident memory usage is often only 2-4mb, which
+makes good use of low-ram servers.</p>
 
 <p>This posts describes a simple deployment setup that lets me run unmodified
-haskell program as daemons and have them automatically logged, re-compiled and
+haskell programs as daemons and have them automatically logged, re-compiled and
 re-launched when I do a <code>git push</code>.</p>
 
 <p>Git hooks and <a href="http://upstart.ubuntu.com/">Upstart</a> make this a snap. At the end we'll have the standard daemon commands like <code>stop</code>, <code>start</code> and <code>restart</code>, automatic rolling log files and even automatic respawning if our program crashes, all for the price of a tiny config file.</p>
@@ -42,18 +42,16 @@ example, and I'll walk through the steps to set up easy deployment.</p>
 mkdir -p ~/projects/Intrepid/repo
 cd ~/projects/Intrepid/repo
 git --bare init
-</code></p>
-
-<p>We'll push to this repo in a minute, but first let's do some setup. In the bare repo there's a <code>hooks</code> directory. You can place scripts here that will be run after or before various actions are performed on the repo (more on hooks <a href="http://git-scm.com/book/en/Customizing-Git-Git-Hooks">here</a>). We'll set up a <code>post-receive</code> hook that will run after the repo recieves a <code>push</code>. Our hook will do a checkout, build our app and restart it.</p>
-
-<p>First, let's create a working directory for our app on the server, which we'll
-checkout into:</p>
+</code>
+and create the directory we'll check out to:</p>
 
 <p><code>bash
 mkdir ~/projects/Intrepid/bin
 </code></p>
 
-<p>Now we'll create the hook. Name this file <code>post-receive</code> and place it in the repo's <code>hooks</code> directory. Don't forget to
+<p>We'll push to this repo in a minute, but first let's do some setup. In the bare repo there's a <code>hooks</code> directory. You can place scripts here that will be run after or before various actions are performed on the repo (more on hooks <a href="http://git-scm.com/book/en/Customizing-Git-Git-Hooks">here</a>).</p>
+
+<p>We'll set up a <code>post-receive</code> hook that will run after the repo recieves a <code>push</code>. Our hook will do a checkout, build our app and restart it. Create a file called <code>post-receive</code> and place it in the repo's <code>hooks</code> directory. Don't forget to
 <code>chod +x</code> so it's runnable.</p>
 
 <p>```bash post-receive</p>
