@@ -1,0 +1,140 @@
+<?xml version="1.0" encoding="utf-8"?>
+<feed xmlns="http://www.w3.org/2005/Atom">
+
+  <title><![CDATA[Category: haskell | forever getline]]></title>
+  <link href="http://jhickner.github.com/blog/categories/haskell/atom.xml" rel="self"/>
+  <link href="http://jhickner.github.com/"/>
+  <updated>2012-12-20T00:27:03-08:00</updated>
+  <id>http://jhickner.github.com/</id>
+  <author>
+    <name><![CDATA[Jason Hickner]]></name>
+    
+  </author>
+  <generator uri="http://octopress.org/">Octopress</generator>
+
+  
+  <entry>
+    <title type="html"><![CDATA[Deploying Haskell apps with Git and Upstart]]></title>
+    <link href="http://jhickner.github.com/blog/2012/12/19/easy-haskell-deployment/"/>
+    <updated>2012-12-19T20:21:00-08:00</updated>
+    <id>http://jhickner.github.com/blog/2012/12/19/easy-haskell-deployment</id>
+    <content type="html"><![CDATA[<p>This post describes a simple deployment process for small, single-server haskell programs. I'll walk through the process of running an unmodified haskell program as a daemon, as well as how to set it up to automatically recompile and relaunch when you <code>git push</code> to your local repo.</p>
+
+<p>Git hooks and <a href="http://upstart.ubuntu.com/">Upstart</a> make this a snap. At the end we'll have the standard daemon commands like <code>stop</code>, <code>start</code> and <code>restart</code>, automatic rolling log files and even automatic respawning if our program crashes, all for the price of a tiny config file.</p>
+
+<p>We'll use a remote monitoring app called <code>intrepid</code> that I've been working on as an
+example, and I'll walk through the steps to set up easy deployment.</p>
+
+<h2>Step 1: Set up a remote Git repo</h2>
+
+<p>Assuming you have a local copy of your app's source stored in git and complete with a proper .cabal file (easy to create with <code>cabal init</code>), the next step is to set up a receiving repo you can push to. We'll make it <code>--bare</code>, because it's actually simpler to do a checkout from a bare repo after every push than to use the repo's working folder.</p>
+
+<p>On your server, create a folder for the repo and initialize it:</p>
+
+<p><code>bash
+mkdir -p ~/projects/Intrepid/repo
+cd ~/projects/Intrepid/repo
+git --bare init
+</code></p>
+
+<p>We'll push to this repo in a minute, but first let's do some setup. In the bare repo there's a <code>hooks</code> directory. You can place scripts here that will be run after or before various actions are performed on the repo. We'll set up a <code>post-receive</code> hook that will run after the repo recieves a <code>push</code>. It will do a checkout, then build our app and restart it.</p>
+
+<p>First, let's create a working folder for our app:</p>
+
+<p><code>bash
+mkdir ~/projects/Intrepid/bin
+</code></p>
+
+<p>Now we'll create the hook. Name this file <code>post-receive</code> and place it in <code>../repo/hooks</code>. Don't forget to
+<code>chod +x</code> so it's runnable.</p>
+
+<p>```bash post-receive</p>
+
+<h1>!/bin/sh</h1>
+
+<h1>check out to our working folder by setting GIT_WORK_TREE</h1>
+
+<p>GIT_WORK_TREE=/home/apps/projects/Intrepid/bin git checkout -f</p>
+
+<h1>cd there, build the app</h1>
+
+<p>cd /home/apps/projects/Intrepid/bin
+cabal configure
+cabal install --only-dependencies
+cabal build</p>
+
+<h1>restart with upstart</h1>
+
+<p>restart intrepid
+```</p>
+
+<p>All set! Next we'll set up Upstart, which will provide that <code>restart</code> line at the
+bottom.</p>
+
+<h2>Step 2: Setting up Upstart</h2>
+
+<p><a href="http://upstart.ubuntu.com/">Upstart</a> is a replacement for the venerable SysV
+init, the program we've been using to stop and start unix daemons for <strong>over
+150 years</strong> (approximately).</p>
+
+<p><code>init</code> is great, but I like Upstart for small
+projects because it's so easy to set up, which we'll see in a minute. This part of the post is
+Upstart-specific, but a similar effect can be squeezed out of any init-variant,
+it just might take a bit more effort. If you're running Ubuntu, you have
+Upstart.</p>
+
+<p>Here's an example upstart config file for <code>intrepid</code>:</p>
+
+<p>``` bash intrepid.conf
+description "Intrepid - remote monitoring tool"</p>
+
+<h1>start after the filesystem and ethernet are up</h1>
+
+<p>start on (local-filesystems and net-device-up IFACE=eth0)</p>
+
+<p>stop on shutdown</p>
+
+<h1>restart automatically if we crash</h1>
+
+<p>respawn</p>
+
+<h1>cd to our working dir and execute</h1>
+
+<p>script
+  cd /home/apps/projects/Intrepid
+  dist/build/intrepid/intrepid
+end script
+```</p>
+
+<p>Your conf file should be named <code>&lt;appname&gt;.conf</code> and placed in <code>/etc/init</code>. That's it! We get a lot for those few lines, but there's a lot more Upstart can do (<a href="http://upstart.ubuntu.com/cookbook/">docs</a>).</p>
+
+<h2>Step 3: Push</h2>
+
+<p>Finally, in our local repo we'll add the remote repo as a push target:</p>
+
+<p><code>bash
+git remote add apps ssh://apps@appserver/~/projects/repos/Intrepid
+</code></p>
+
+<p>and push to it:</p>
+
+<p><code>bash
+git push apps master
+</code></p>
+
+<p>If all goes well, you should see your app compiling successfully, followed by
+a message like this from upstart:</p>
+
+<p><code>bash
+intrepid start/running, process 5037
+</code></p>
+
+<p>And we're done! You can now ssh to your server and <code>stop/start/restart intrepid</code>. You
+can also type <code>status intrepid</code> to see if it's running. You'll find rolling log
+files of your program's stdout/stderr output at
+<code>/var/log/upstart/&lt;appname&gt;.log</code>. And every time you <code>git push</code>, your
+running app will be automatically updated.</p>
+]]></content>
+  </entry>
+  
+</feed>

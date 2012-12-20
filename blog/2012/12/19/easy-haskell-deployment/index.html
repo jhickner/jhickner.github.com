@@ -5,7 +5,7 @@
 <!--[if (gt IE 8)|(gt IEMobile 7)|!(IEMobile)|!(IE)]><!--><html class="no-js" lang="en"><!--<![endif]-->
 <head>
   <meta charset="utf-8">
-  <title>forever getline</title>
+  <title>Deploying Haskell apps with Git and Upstart - forever getline</title>
   <meta name="author" content="Jason Hickner">
 
   
@@ -18,7 +18,7 @@
   <meta name="viewport" content="width=device-width, initial-scale=1">
 
   
-  <link rel="canonical" href="http://jhickner.github.com/">
+  <link rel="canonical" href="http://jhickner.github.com/blog/2012/12/19/easy-haskell-deployment/">
   <link href="/favicon.png" rel="icon">
   <link href="/stylesheets/screen.css" media="screen, projection" rel="stylesheet" type="text/css">
   <script src="/javascripts/modernizr-2.0.js"></script>
@@ -62,15 +62,12 @@
 </nav>
   <div id="main">
     <div id="content">
-      <div class="blog-index">
+      <div>
+<article class="hentry" role="article">
   
-  
-  
-    <article>
-      
   <header>
     
-      <h1 class="entry-title"><a href="/blog/2012/12/19/easy-haskell-deployment/">Deploying Haskell Apps With Git and Upstart</a></h1>
+      <h1 class="entry-title">Deploying Haskell Apps With Git and Upstart</h1>
     
     
       <p class="meta">
@@ -93,7 +90,7 @@
   </header>
 
 
-  <div class="entry-content"><p>This post describes a simple deployment process for small, single-server haskell programs. I&#8217;ll walk through the process of running an unmodified haskell program as a daemon, as well as how to set it up to automatically recompile and relaunch when you <code>git push</code> to your local repo.</p>
+<div class="entry-content"><p>This post describes a simple deployment process for small, single-server haskell programs. I&#8217;ll walk through the process of running an unmodified haskell program as a daemon, as well as how to set it up to automatically recompile and relaunch when you <code>git push</code> to your local repo.</p>
 
 <p>Git hooks and <a href="http://upstart.ubuntu.com/">Upstart</a> make this a snap. At the end we&#8217;ll have the standard daemon commands like <code>stop</code>, <code>start</code> and <code>restart</code>, automatic rolling log files and even automatic respawning if our program crashes, all for the price of a tiny config file.</p>
 
@@ -238,18 +235,57 @@ files of your program&#8217;s stdout/stderr output at
 <code>/var/log/upstart/&lt;appname&gt;.log</code>. And every time you <code>git push</code>, your
 running app will be automatically updated.</p>
 </div>
+
+
+  <footer>
+    <p class="meta">
+      
   
+
+<span class="byline author vcard">Posted by <span class="fn">Jason Hickner</span></span>
+
+      
+
+
+
+
+
+
+
+
   
 
 
-    </article>
+<time datetime="2012-12-19T20:21:00-08:00" pubdate data-updated="true">Dec 19<span>th</span>, 2012</time>
+      
+
+<span class="categories">
   
-  <div class="pagination">
+    <a class='category' href='/blog/categories/haskell/'>haskell</a>
+  
+</span>
+
+
+    </p>
     
-    <a href="/blog/archives">Blog Archives</a>
-    
-  </div>
+      <div class="sharing">
+  
+  <a href="http://twitter.com/share" class="twitter-share-button" data-url="http://jhickner.github.com/blog/2012/12/19/easy-haskell-deployment/" data-via="jhickner" data-counturl="http://jhickner.github.com/blog/2012/12/19/easy-haskell-deployment/" >Tweet</a>
+  
+  
+  
 </div>
+
+    
+    <p class="meta">
+      
+      
+    </p>
+  </footer>
+</article>
+
+</div>
+
 <aside class="sidebar">
   
     <section>
@@ -266,7 +302,7 @@ running app will be automatically updated.</p>
 <section>
   <h1>GitHub Repos</h1>
   <ul id="gh_repos">
-    <li class="loading">Status updating&#8230;</li>
+    <li class="loading">Status updating...</li>
   </ul>
   
   <a href="https://github.com/jhickner">@jhickner</a> on GitHub
@@ -296,7 +332,7 @@ running app will be automatically updated.</p>
 <section>
   <h1>Latest Tweets</h1>
   <ul id="tweets">
-    <li class="loading">Status updating&#8230;</li>
+    <li class="loading">Status updating...</li>
   </ul>
   <script type="text/javascript">
     $.domReady(function(){
@@ -315,6 +351,7 @@ running app will be automatically updated.</p>
 
   
 </aside>
+
 
     </div>
   </div>
