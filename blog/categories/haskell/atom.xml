@@ -4,7 +4,7 @@
   <title><![CDATA[Category: haskell | forever getline]]></title>
   <link href="http://jhickner.github.com/blog/categories/haskell/atom.xml" rel="self"/>
   <link href="http://jhickner.github.com/"/>
-  <updated>2012-12-20T10:09:13-08:00</updated>
+  <updated>2012-12-20T10:13:03-08:00</updated>
   <id>http://jhickner.github.com/</id>
   <author>
     <name><![CDATA[Jason Hickner]]></name>
@@ -18,11 +18,14 @@
     <link href="http://jhickner.github.com/blog/2012/12/19/easy-haskell-deployment/"/>
     <updated>2012-12-19T20:21:00-08:00</updated>
     <id>http://jhickner.github.com/blog/2012/12/19/easy-haskell-deployment</id>
-    <content type="html"><![CDATA[<p>At work I run a bunch of small apps that do various analytics and monitoring
-tasks, all spread across servers at Rackspace and Amazon. This posts describes
-a simple deployment setup that lets me run unmodified haskell program as
-daemons and have them automatically re-compiled and re-launched when I do
-a <code>git push</code>.</p>
+    <content type="html"><![CDATA[<p>At work I run a bunch of small apps that do little analytics and monitoring
+tasks, all spread across servers at Rackspace and Amazon. I like using haskell
+for these types of apps since the resident memory usage is often only 2-4mb,
+which makes great use of low-ram servers.</p>
+
+<p>This posts describes a simple deployment setup that lets me run unmodified
+haskell program as daemons and have them automatically logged, re-compiled and
+re-launched when I do a <code>git push</code>.</p>
 
 <p>Git hooks and <a href="http://upstart.ubuntu.com/">Upstart</a> make this a snap. At the end we'll have the standard daemon commands like <code>stop</code>, <code>start</code> and <code>restart</code>, automatic rolling log files and even automatic respawning if our program crashes, all for the price of a tiny config file.</p>
 

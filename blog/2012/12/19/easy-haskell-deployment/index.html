@@ -9,8 +9,8 @@
   <meta name="author" content="Jason Hickner">
 
   
-  <meta name="description" content="At work I run a bunch of small apps that do various analytics and monitoring
-tasks, all spread across servers at Rackspace and Amazon. This posts &hellip;">
+  <meta name="description" content="At work I run a bunch of small apps that do little analytics and monitoring
+tasks, all spread across servers at Rackspace and Amazon. I like using &hellip;">
   
 
   <!-- http://t.co/dKP3o1e -->
@@ -91,11 +91,14 @@ tasks, all spread across servers at Rackspace and Amazon. This posts &hellip;">
   </header>
 
 
-<div class="entry-content"><p>At work I run a bunch of small apps that do various analytics and monitoring
-tasks, all spread across servers at Rackspace and Amazon. This posts describes
-a simple deployment setup that lets me run unmodified haskell program as
-daemons and have them automatically re-compiled and re-launched when I do
-a <code>git push</code>.</p>
+<div class="entry-content"><p>At work I run a bunch of small apps that do little analytics and monitoring
+tasks, all spread across servers at Rackspace and Amazon. I like using haskell
+for these types of apps since the resident memory usage is often only 2-4mb,
+which makes great use of low-ram servers.</p>
+
+<p>This posts describes a simple deployment setup that lets me run unmodified
+haskell program as daemons and have them automatically logged, re-compiled and
+re-launched when I do a <code>git push</code>.</p>
 
 <p>Git hooks and <a href="http://upstart.ubuntu.com/">Upstart</a> make this a snap. At the end we&#8217;ll have the standard daemon commands like <code>stop</code>, <code>start</code> and <code>restart</code>, automatic rolling log files and even automatic respawning if our program crashes, all for the price of a tiny config file.</p>
 
