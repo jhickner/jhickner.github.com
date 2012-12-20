@@ -5,11 +5,11 @@
 <!--[if (gt IE 8)|(gt IEMobile 7)|!(IEMobile)|!(IE)]><!--><html class="no-js" lang="en"><!--<![endif]-->
 <head>
   <meta charset="utf-8">
-  <title>Deploying Haskell apps with Git and Upstart - forever getline</title>
+  <title>Easy haskell app deployment with git and Upstart - forever getline</title>
   <meta name="author" content="Jason Hickner">
 
   
-  <meta name="description" content="This post describes a simple deployment process for small, single-server haskell programs. I&#8217;ll walk through the process of running an &hellip;">
+  <meta name="description" content="This post describes a simple deployment process for small, single-server haskell programs, although most of this would work for an app written in any &hellip;">
   
 
   <!-- http://t.co/dKP3o1e -->
@@ -67,7 +67,7 @@
   
   <header>
     
-      <h1 class="entry-title">Deploying Haskell Apps With Git and Upstart</h1>
+      <h1 class="entry-title">Easy Haskell App Deployment With Git and Upstart</h1>
     
     
       <p class="meta">
@@ -90,7 +90,7 @@
   </header>
 
 
-<div class="entry-content"><p>This post describes a simple deployment process for small, single-server haskell programs. I&#8217;ll walk through the process of running an unmodified haskell program as a daemon, as well as how to set it up to automatically recompile and relaunch when you <code>git push</code> to your local repo.</p>
+<div class="entry-content"><p>This post describes a simple deployment process for small, single-server haskell programs, although most of this would work for an app written in any language. I&#8217;ll walk through the process of running an unmodified haskell program as a daemon, as well as how to set it up to automatically recompile and relaunch when you <code>git push</code> to your local repo.</p>
 
 <p>Git hooks and <a href="http://upstart.ubuntu.com/">Upstart</a> make this a snap. At the end we&#8217;ll have the standard daemon commands like <code>stop</code>, <code>start</code> and <code>restart</code>, automatic rolling log files and even automatic respawning if our program crashes, all for the price of a tiny config file.</p>
 
@@ -299,7 +299,7 @@ running app will be automatically updated!</p>
   <ul id="recent_posts">
     
       <li class="post">
-        <a href="/blog/2012/12/19/easy-haskell-deployment/">Deploying Haskell apps with Git and Upstart</a>
+        <a href="/blog/2012/12/19/easy-haskell-deployment/">Easy haskell app deployment with git and Upstart</a>
       </li>
     
   </ul>
