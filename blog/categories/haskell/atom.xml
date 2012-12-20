@@ -4,7 +4,7 @@
   <title><![CDATA[Category: haskell | forever getline]]></title>
   <link href="http://jhickner.github.com/blog/categories/haskell/atom.xml" rel="self"/>
   <link href="http://jhickner.github.com/"/>
-  <updated>2012-12-20T10:17:52-08:00</updated>
+  <updated>2012-12-20T10:28:12-08:00</updated>
   <id>http://jhickner.github.com/</id>
   <author>
     <name><![CDATA[Jason Hickner]]></name>
@@ -135,10 +135,13 @@ a message like this from upstart, telling you your app is running:</p>
 intrepid start/running, process 5037
 </code></p>
 
-<p>And we're done! You can now ssh to your server and <code>stop/start/restart intrepid</code>. You
-can also type <code>status intrepid</code> to see if it's running. You'll find rolling log
-files of your program's stdout/stderr output at
-<code>/var/log/upstart/&lt;appname&gt;.log</code>. And every time you <code>git push</code>, your
+<p>And we're done! Upstart gives you all the standard daemon commands, so you can
+ssh to your server and <code>stop/start/restart intrepid</code>. You can also run <code>status
+intrepid</code> to see if it's running. If it crashes, it will be automatically
+restarted, and you'll find rolling log files of your app's output at
+<code>/var/log/upstart/&lt;appname&gt;.log</code>.</p>
+
+<p>And of course, every time you <code>git push</code>, your
 running app will be automatically updated!</p>
 ]]></content>
   </entry>
