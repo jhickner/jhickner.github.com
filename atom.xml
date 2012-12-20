@@ -4,7 +4,7 @@
   <title><![CDATA[forever getline]]></title>
   <link href="http://jhickner.github.com/atom.xml" rel="self"/>
   <link href="http://jhickner.github.com/"/>
-  <updated>2012-12-20T00:44:44-08:00</updated>
+  <updated>2012-12-20T10:07:18-08:00</updated>
   <id>http://jhickner.github.com/</id>
   <author>
     <name><![CDATA[Jason Hickner]]></name>
@@ -18,7 +18,11 @@
     <link href="http://jhickner.github.com/blog/2012/12/19/easy-haskell-deployment/"/>
     <updated>2012-12-19T20:21:00-08:00</updated>
     <id>http://jhickner.github.com/blog/2012/12/19/easy-haskell-deployment</id>
-    <content type="html"><![CDATA[<p>This post describes a simple deployment process for small, single-server haskell programs, although most of this would work for an app written in any language. I&#8217;ll walk through the process of running an unmodified haskell program as a daemon, as well as how to set it up to automatically recompile and relaunch when you <code>git push</code> to your local repo.</p>
+    <content type="html"><![CDATA[<p>At work I run a bunch of small apps that do various analytics and monitoring
+tasks, all spread across servers at Rackspace and Amazon. This posts describes
+a simple deployment setup that lets me run unmodified haskell program as
+daemons and have them automatically re-compiled and re-launched when I do
+a <code>git push</code>.</p>
 
 <p>Git hooks and <a href="http://upstart.ubuntu.com/">Upstart</a> make this a snap. At the end we&#8217;ll have the standard daemon commands like <code>stop</code>, <code>start</code> and <code>restart</code>, automatic rolling log files and even automatic respawning if our program crashes, all for the price of a tiny config file.</p>
 
@@ -27,7 +31,7 @@ example, and I&#8217;ll walk through the steps to set up easy deployment.</p>
 
 <h2>Step 1: Set up a remote Git repo</h2>
 
-<p>Assuming you have a local copy of your app&#8217;s source stored in git and complete with a proper .cabal file (easy to create with <code>cabal init</code>), the next step is to set up a receiving repo you can push to. We&#8217;ll make it <code>--bare</code>, because it&#8217;s actually simpler to do a checkout from a bare repo after every push than to use the repo&#8217;s working folder.</p>
+<p>Assuming you have a local copy of your app&#8217;s source stored in git and complete with a proper .cabal file (easy to create with <code>cabal init</code>), the next step is to set up a receiving repo you can push to. We&#8217;ll make it <code>--bare</code>, because it&#8217;s actually simpler to do a checkout from a bare repo after every push and then run that than it is to try to use the repo&#8217;s working directory.</p>
 
 <p>On your server, create a folder for the repo and initialize it:</p>
 
@@ -42,7 +46,8 @@ example, and I&#8217;ll walk through the steps to set up easy deployment.</p>
 
 <p>We&#8217;ll push to this repo in a minute, but first let&#8217;s do some setup. In the bare repo there&#8217;s a <code>hooks</code> directory. You can place scripts here that will be run after or before various actions are performed on the repo (more on hooks <a href="http://git-scm.com/book/en/Customizing-Git-Git-Hooks">here</a>). We&#8217;ll set up a <code>post-receive</code> hook that will run after the repo recieves a <code>push</code>. Our hook will do a checkout, build our app and restart it.</p>
 
-<p>First, let&#8217;s create a working folder for our app on the server:</p>
+<p>First, let&#8217;s create a working directory for our app on the server, which we&#8217;ll
+checkout into:</p>
 
 <figure class='code'><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
 </pre></td><td class='code'><pre><code class='bash'><span class='line'>mkdir ~/projects/Intrepid/bin
@@ -150,7 +155,7 @@ Upstart.</p>
 
 
 <p>If all goes well, you should see your app compiling successfully, followed by
-a message like this from upstart:</p>
+a message like this from upstart, telling you your app is running:</p>
 
 <figure class='code'><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
 </pre></td><td class='code'><pre><code class='bash'><span class='line'>intrepid start/running, process 5037
