@@ -4,7 +4,7 @@
   <title><![CDATA[Category: haskell | forever getline]]></title>
   <link href="http://jhickner.github.com/blog/categories/haskell/atom.xml" rel="self"/>
   <link href="http://jhickner.github.com/"/>
-  <updated>2012-12-20T00:27:03-08:00</updated>
+  <updated>2012-12-20T00:39:46-08:00</updated>
   <id>http://jhickner.github.com/</id>
   <author>
     <name><![CDATA[Jason Hickner]]></name>
@@ -37,15 +37,15 @@ cd ~/projects/Intrepid/repo
 git --bare init
 </code></p>
 
-<p>We'll push to this repo in a minute, but first let's do some setup. In the bare repo there's a <code>hooks</code> directory. You can place scripts here that will be run after or before various actions are performed on the repo. We'll set up a <code>post-receive</code> hook that will run after the repo recieves a <code>push</code>. It will do a checkout, then build our app and restart it.</p>
+<p>We'll push to this repo in a minute, but first let's do some setup. In the bare repo there's a <code>hooks</code> directory. You can place scripts here that will be run after or before various actions are performed on the repo (more on hooks <a href="http://git-scm.com/book/en/Customizing-Git-Git-Hooks">here</a>). We'll set up a <code>post-receive</code> hook that will run after the repo recieves a <code>push</code>. Our hook will do a checkout, build our app and restart it.</p>
 
-<p>First, let's create a working folder for our app:</p>
+<p>First, let's create a working folder for our app on the server:</p>
 
 <p><code>bash
 mkdir ~/projects/Intrepid/bin
 </code></p>
 
-<p>Now we'll create the hook. Name this file <code>post-receive</code> and place it in <code>../repo/hooks</code>. Don't forget to
+<p>Now we'll create the hook. Name this file <code>post-receive</code> and place it in the repo's <code>hooks</code> directory. Don't forget to
 <code>chod +x</code> so it's runnable.</p>
 
 <p>```bash post-receive</p>
@@ -68,7 +68,7 @@ cabal build</p>
 <p>restart intrepid
 ```</p>
 
-<p>All set! Next we'll set up Upstart, which will provide that <code>restart</code> line at the
+<p>All set! This script checks out our code, builds it and restarts after every <code>push</code>. Next we'll set up Upstart, which will provide that <code>restart</code> line at the
 bottom.</p>
 
 <h2>Step 2: Setting up Upstart</h2>
@@ -79,11 +79,11 @@ init, the program we've been using to stop and start unix daemons for <strong>ov
 
 <p><code>init</code> is great, but I like Upstart for small
 projects because it's so easy to set up, which we'll see in a minute. This part of the post is
-Upstart-specific, but a similar effect can be squeezed out of any init-variant,
+Upstart-specific, but a similar effect can be squeezed out of any init system,
 it just might take a bit more effort. If you're running Ubuntu, you have
 Upstart.</p>
 
-<p>Here's an example upstart config file for <code>intrepid</code>:</p>
+<p>Here's an example Upstart config file for <code>intrepid</code>:</p>
 
 <p>``` bash intrepid.conf
 description "Intrepid - remote monitoring tool"</p>
@@ -98,7 +98,7 @@ description "Intrepid - remote monitoring tool"</p>
 
 <p>respawn</p>
 
-<h1>cd to our working dir and execute</h1>
+<h1>tell upstart how to start our app</h1>
 
 <p>script
   cd /home/apps/projects/Intrepid
@@ -133,7 +133,7 @@ intrepid start/running, process 5037
 can also type <code>status intrepid</code> to see if it's running. You'll find rolling log
 files of your program's stdout/stderr output at
 <code>/var/log/upstart/&lt;appname&gt;.log</code>. And every time you <code>git push</code>, your
-running app will be automatically updated.</p>
+running app will be automatically updated!</p>
 ]]></content>
   </entry>
   

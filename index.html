@@ -115,16 +115,16 @@ example, and I&#8217;ll walk through the steps to set up easy deployment.</p>
 </span></code></pre></td></tr></table></div></figure>
 
 
-<p>We&#8217;ll push to this repo in a minute, but first let&#8217;s do some setup. In the bare repo there&#8217;s a <code>hooks</code> directory. You can place scripts here that will be run after or before various actions are performed on the repo. We&#8217;ll set up a <code>post-receive</code> hook that will run after the repo recieves a <code>push</code>. It will do a checkout, then build our app and restart it.</p>
+<p>We&#8217;ll push to this repo in a minute, but first let&#8217;s do some setup. In the bare repo there&#8217;s a <code>hooks</code> directory. You can place scripts here that will be run after or before various actions are performed on the repo (more on hooks <a href="http://git-scm.com/book/en/Customizing-Git-Git-Hooks">here</a>). We&#8217;ll set up a <code>post-receive</code> hook that will run after the repo recieves a <code>push</code>. Our hook will do a checkout, build our app and restart it.</p>
 
-<p>First, let&#8217;s create a working folder for our app:</p>
+<p>First, let&#8217;s create a working folder for our app on the server:</p>
 
 <figure class='code'><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
 </pre></td><td class='code'><pre><code class='bash'><span class='line'>mkdir ~/projects/Intrepid/bin
 </span></code></pre></td></tr></table></div></figure>
 
 
-<p>Now we&#8217;ll create the hook. Name this file <code>post-receive</code> and place it in <code>../repo/hooks</code>. Don&#8217;t forget to
+<p>Now we&#8217;ll create the hook. Name this file <code>post-receive</code> and place it in the repo&#8217;s <code>hooks</code> directory. Don&#8217;t forget to
 <code>chod +x</code> so it&#8217;s runnable.</p>
 
 <figure class='code'><figcaption><span>post-receive</span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
@@ -156,7 +156,7 @@ example, and I&#8217;ll walk through the steps to set up easy deployment.</p>
 </span></code></pre></td></tr></table></div></figure>
 
 
-<p>All set! Next we&#8217;ll set up Upstart, which will provide that <code>restart</code> line at the
+<p>All set! This script checks out our code, builds it and restarts after every <code>push</code>. Next we&#8217;ll set up Upstart, which will provide that <code>restart</code> line at the
 bottom.</p>
 
 <h2>Step 2: Setting up Upstart</h2>
@@ -167,11 +167,11 @@ init, the program we&#8217;ve been using to stop and start unix daemons for <str
 
 <p><code>init</code> is great, but I like Upstart for small
 projects because it&#8217;s so easy to set up, which we&#8217;ll see in a minute. This part of the post is
-Upstart-specific, but a similar effect can be squeezed out of any init-variant,
+Upstart-specific, but a similar effect can be squeezed out of any init system,
 it just might take a bit more effort. If you&#8217;re running Ubuntu, you have
 Upstart.</p>
 
-<p>Here&#8217;s an example upstart config file for <code>intrepid</code>:</p>
+<p>Here&#8217;s an example Upstart config file for <code>intrepid</code>:</p>
 
 <figure class='code'><figcaption><span>intrepid.conf</span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
 <span class='line-number'>2</span>
@@ -198,7 +198,7 @@ Upstart.</p>
 </span><span class='line'><span class="c"># restart automatically if we crash</span>
 </span><span class='line'>respawn
 </span><span class='line'>
-</span><span class='line'><span class="c"># cd to our working dir and execute</span>
+</span><span class='line'><span class="c"># tell upstart how to start our app</span>
 </span><span class='line'>script
 </span><span class='line'>  <span class="nb">cd</span> /home/apps/projects/Intrepid
 </span><span class='line'>  dist/build/intrepid/intrepid
@@ -236,7 +236,7 @@ a message like this from upstart:</p>
 can also type <code>status intrepid</code> to see if it&#8217;s running. You&#8217;ll find rolling log
 files of your program&#8217;s stdout/stderr output at
 <code>/var/log/upstart/&lt;appname&gt;.log</code>. And every time you <code>git push</code>, your
-running app will be automatically updated.</p>
+running app will be automatically updated!</p>
 </div>
   
   
