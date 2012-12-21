@@ -4,7 +4,7 @@
   <title><![CDATA[Category: haskell | forever getline]]></title>
   <link href="http://jhickner.github.com/blog/categories/haskell/atom.xml" rel="self"/>
   <link href="http://jhickner.github.com/"/>
-  <updated>2012-12-20T11:00:18-08:00</updated>
+  <updated>2012-12-21T10:38:27-08:00</updated>
   <id>http://jhickner.github.com/</id>
   <author>
     <name><![CDATA[Jason Hickner]]></name>
@@ -14,7 +14,7 @@
 
   
   <entry>
-    <title type="html"><![CDATA[Easy haskell app deployment with git and Upstart]]></title>
+    <title type="html"><![CDATA[Easy haskell app deployment with git and Upstart (or systemd)]]></title>
     <link href="http://jhickner.github.com/blog/2012/12/19/easy-haskell-deployment/"/>
     <updated>2012-12-19T20:21:00-08:00</updated>
     <id>http://jhickner.github.com/blog/2012/12/19/easy-haskell-deployment</id>
@@ -27,7 +27,7 @@ makes good use of low-ram servers.</p>
 haskell programs as daemons and have them
 automatically re-compiled and re-launched when I do a <code>git push</code>.</p>
 
-<p>Git hooks and <a href="http://upstart.ubuntu.com/">Upstart</a> make this a snap. At the end of this post we'll have the standard daemon commands like <code>stop</code>, <code>start</code> and <code>restart</code>, automatic rolling log files and even automatic respawning if our program crashes, all for the price of a tiny config file.</p>
+<p>Git hooks and <a href="http://upstart.ubuntu.com/">Upstart</a>/systemd make this a snap. At the end of this post we'll have the standard daemon commands like <code>stop</code>, <code>start</code> and <code>restart</code>, automatic rolling log files and even automatic respawning if our program crashes, all for the price of a tiny config file.</p>
 
 <p>We'll use a remote monitoring app called <code>intrepid</code> that I've been working on as an
 example, and I'll walk through the steps to set up easy deployment.</p>
@@ -79,17 +79,13 @@ cabal build</p>
 <p>All set! This script checks out our code, builds it and restarts after every <code>push</code>. Next we'll set up Upstart, which will provide that <code>restart</code> line at the
 bottom.</p>
 
-<h2>Step 2: Setting up Upstart</h2>
+<h2>Step 2: Setting up Upstart/systemd</h2>
 
-<p><a href="http://upstart.ubuntu.com/">Upstart</a> is a replacement for the venerable SysV
-init, the program we've been using to stop and start unix daemons for <strong>over
-150 years</strong> (approximately).</p>
-
-<p><code>init</code> is great, but I like Upstart for small
-projects because it's so easy to set up, which we'll see in a minute. This part of the post is
-Upstart-specific, but a similar effect can be squeezed out of any init system,
-it just might take a bit more effort. If you're running Ubuntu, you have
-Upstart.</p>
+<p><a href="http://upstart.ubuntu.com/">Upstart</a> and systemd are two popular replacements
+for the venerable SysV init, the program we've been using to stop and start
+unix daemons for <strong>over 150 years</strong> (approximately). Depending on your distro,
+you probably have one or the other installed already. The setup for each is
+very similar.</p>
 
 <p>Here's an example Upstart config file for <code>intrepid</code>:</p>
 
@@ -116,6 +112,25 @@ end script
 
 <p>Your conf file should be named <code>&lt;appname&gt;.conf</code> and placed in <code>/etc/init</code>. That's it! We get a lot for those few lines, but there's a lot more Upstart can do (<a href="http://upstart.ubuntu.com/cookbook/">docs</a>).</p>
 
+<p>And here's an example systemd service file, which should be placed in
+<code>/etc/systemd/system</code>.</p>
+
+<p>```bash intrepid.service
+[Unit]
+Description=Intrepid remote monitoring tool
+After=network.target</p>
+
+<p>[Service]
+User=apps
+WorkingDirectory=/home/apps/projects/Intrepid/bin
+ExecStart=/home/apps/projects/Intrepid/bin/dist/build/intrepid/intrepid
+Restart=always</p>
+
+<p>[Install]
+Alias=intrepid.service
+WantedBy=multi-user.target
+```</p>
+
 <h2>Step 3: Push</h2>
 
 <p>Finally, in our local repo we'll add the remote repo as a push target:</p>
@@ -137,11 +152,10 @@ a message like this from upstart, telling you your app is running:</p>
 intrepid start/running, process 5037
 </code></p>
 
-<p>And we're done! Upstart gives you all the standard daemon commands, so you can
-ssh to your server and <code>stop/start/restart intrepid</code>. You can also run <code>status
-intrepid</code> to see if it's running. If it crashes, it will be automatically
-restarted, and you'll find rolling log files of your app's output at
-<code>/var/log/upstart/&lt;appname&gt;.log</code>.</p>
+<p>And we're done! You now have all the standard daemon commands, so you can
+ssh to your server and <code>stop/start/restart/status intrepid</code> if you have Upstart or
+<code>systemctl start/stop/restart/status intrepid</code> on systemd. If it crashes, it will be automatically
+restarted. Upstart will place log files at <code>/var/log/upstart/&lt;appname&gt;.log</code>.</p>
 
 <p>And of course, every time you <code>git push</code>, your
 running app will be automatically updated!</p>
