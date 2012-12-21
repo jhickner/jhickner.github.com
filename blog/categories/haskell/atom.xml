@@ -4,7 +4,7 @@
   <title><![CDATA[Category: haskell | forever getline]]></title>
   <link href="http://jhickner.github.com/blog/categories/haskell/atom.xml" rel="self"/>
   <link href="http://jhickner.github.com/"/>
-  <updated>2012-12-21T10:38:27-08:00</updated>
+  <updated>2012-12-21T10:40:19-08:00</updated>
   <id>http://jhickner.github.com/</id>
   <author>
     <name><![CDATA[Jason Hickner]]></name>
@@ -112,7 +112,7 @@ end script
 
 <p>Your conf file should be named <code>&lt;appname&gt;.conf</code> and placed in <code>/etc/init</code>. That's it! We get a lot for those few lines, but there's a lot more Upstart can do (<a href="http://upstart.ubuntu.com/cookbook/">docs</a>).</p>
 
-<p>And here's an example systemd service file, which should be placed in
+<p>And here's an example systemd service file (courtesy of <strong><em>vagif</em></strong> on reddit), which should be placed in
 <code>/etc/systemd/system</code>.</p>
 
 <p>```bash intrepid.service
